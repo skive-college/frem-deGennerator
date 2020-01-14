@@ -27,7 +27,7 @@ namespace SkiveKomunefremødeGennerator
         {
             InitializeComponent();
             fileNames = new List<string> { "Skive", "Struer" };
-            lbElever.ItemsSource = DB.GetStudents();
+            lbElever.ItemsSource = DB.GetStudents().OrderBy(s => s.Name);
             lbSkema.ItemsSource = fileNames;
         }
 
@@ -66,6 +66,11 @@ namespace SkiveKomunefremødeGennerator
 
                 }
             }
+        }
+
+        private void DpFrom_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            dpTo.SelectedDate = ((DateTime)dpFrom.SelectedDate).AddMonths(1);
         }
     }
 }

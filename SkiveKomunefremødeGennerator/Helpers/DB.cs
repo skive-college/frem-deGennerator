@@ -51,7 +51,7 @@ namespace SkiveKomunefremødeGennerator.Helpers
 
             try
             {
-                string queryString = "SET DATEFORMAT dmy; SELECT * from presents where StudentID = @ID AND @FromDate <= Date AND Date <= @ToDate";
+                string queryString = "SET DATEFORMAT dmy; SELECT * from presents where StudentID = @ID AND @FromDate <= Date AND Date < @ToDate";
                 using (SqlConnection cnn = new SqlConnection(aspplanconnectionString))
                 {
                     SqlCommand cmd = new SqlCommand(queryString, cnn);
@@ -116,6 +116,31 @@ namespace SkiveKomunefremødeGennerator.Helpers
             }
             return retur;
         }
+
+        public static Holiday GetHoliday(DateTime date)
+        {
+            Holiday retur = null;
+            string queryString = "Select * from Holidays where [From] >= @Date AND too <= @Date";
+            using (SqlConnection cnn = new SqlConnection(aspplanconnectionString))
+            {
+                SqlCommand cmd = new SqlCommand(queryString, cnn);
+                cnn.Open();
+                cmd.Parameters.AddWithValue("@Date", date);
+
+                using (SqlDataReader oReader = cmd.ExecuteReader())
+                {
+                    while (oReader.Read())
+                    {
+                        retur = new Holiday();
+                        retur.Start = DateTime.Parse(oReader["[From]"].ToString());
+                        retur.Slut = DateTime.Parse(oReader["Too"].ToString());
+                    }
+
+                }
+            }
+            return retur;
+        }
+
         private static double[] CalcTime(String[] typeNavne)
         {
             //realtid = 0, Sygdom = 1, UFravær = 2, Lfravær = 3

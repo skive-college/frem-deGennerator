@@ -46,7 +46,8 @@ namespace SkiveKomunefremødeGennerator.Helpers
                     //  object AddToMru, object TextCodepage, object TextVisualLayout, object Local
 
                     int row = setStartRow(regs[0].Dato);
-                    for(int i = 0; i < regs.Count; i++)
+                    int Month = regs[0].Dato.Month;
+                    for (int i = 0; i < regs.Count; i++)
                     {
                         xlWorkSheet.Cells[row, 2] = regs[i].Dato;
                         xlWorkSheet.Cells[row, 3] = regs[i].NormTimer;
@@ -54,9 +55,35 @@ namespace SkiveKomunefremødeGennerator.Helpers
                         xlWorkSheet.Cells[row, 5] = regs[i].Sygdom;
                         xlWorkSheet.Cells[row, 6] = regs[i].UlovligFraværd;
                         xlWorkSheet.Cells[row, 7] = regs[i].LovligFraværd;
+                        int tmp = row;
                         row = calcNextRow(row, regs[i].Dato);
+                        if (regs[i].Dato.AddDays(1).Month == Month && row - 4 == tmp)
+                        {
+                            xlWorkSheet.Cells[tmp + 1, 2] = regs[i].Dato.AddDays(1);
+                            xlWorkSheet.Cells[tmp + 1, 3] = 0;
+                            xlWorkSheet.Cells[tmp + 1, 8] = "pædagogisk dag";
+                        }
+                        else if (i + 1 < regs.Count)
+                        {
+                            int FerieDage = calcFrerie(regs[i].Dato, regs[i + 1].Dato);
+                            if (FerieDage > 0)
+                            {
+                                row = tmp + 1;
+                            }
+                            for (int j = 1; j < FerieDage; j++)
+                            {
+                                if (regs[i].Dato.AddDays(j).DayOfWeek != DayOfWeek.Saturday && regs[i].Dato.AddDays(j).DayOfWeek != DayOfWeek.Sunday)
+                                {
+                                    xlWorkSheet.Cells[row, 2] = regs[i].Dato.AddDays(j);
+                                    xlWorkSheet.Cells[row, 3] = 0;
+                                    xlWorkSheet.Cells[row, 8] = "Ferie";
+                                    
+                                }
+                                row += 1;
+                            }
+                        }
                     }
-                    string newfileName = "fraværdSkiveKommune" + regs[0].ElevNavn +"-" + DateTime.Now.ToShortDateString() + ".xlsx";
+                    string newfileName = "fraværdSkiveKommune" + regs[0].ElevNavn +"-" + DateTime.Now.ToString().Replace(":","-") + ".xlsx";
                     object saveas = System.IO.Path.Combine(baseFolderPath, newfileName);
                     xlWorkBook.SaveAs(saveas, missing, missing, missing
                         , missing, missing, AccessMode, missing
@@ -78,7 +105,14 @@ namespace SkiveKomunefremødeGennerator.Helpers
             }
            
         }
-
+        private static int calcFrerie(DateTime dato1, DateTime dato2)
+        {
+            if (dato1.DayOfWeek == DayOfWeek.Friday && dato1.AddDays(3) < dato2)
+            {
+                return dato2.Day - dato1.Day;
+            }
+            return 0;
+        }
         public static void OpenExcel(string filename)
         {
             

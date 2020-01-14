@@ -5,16 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SkiveKomunefremødeGennerator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="400">
+        Title="Fremøde Skemaer" Height="450" Width="400">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="0 10 0 0"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="0 10 0 0"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="0 10 0 0"/>
+        </Style>
+        <Style TargetType="DatePicker">
+            <Setter Property="Margin" Value="0 10 0 0"/>
+        </Style>
+        <Style TargetType="StackPanel">
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+    </Window.Resources>
     <StackPanel>
         <TextBlock Text="Elev"/>
         <ComboBox x:Name="lbElever" ItemsSource="{Binding}"/>
         <TextBlock Text="Skema"/>
         <ComboBox x:Name="lbSkema" ItemsSource="{Binding}"/>
         <TextBlock Text="Fra"/>
-        <DatePicker x:Name="dpFrom"/>
+        <DatePicker x:Name="dpFrom" SelectedDateChanged="DpFrom_SelectedDateChanged"/>
         <TextBlock Text="Til"/>
         <DatePicker x:Name="dpTo"/>
-        <Button x:Name="Knap" Content="KNAP" Click="Knap_Click"/>
+        <Button x:Name="Knap" Content="Opret" Click="Knap_Click"/>
     </StackPanel>
 </Window>
